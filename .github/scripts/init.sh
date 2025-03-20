@@ -22,7 +22,7 @@ git clone https://github.com/v923z/micropython-ulab ulab || git -C ulab pull
 
 # only check out micropython, if it is not available locally, otherwise, pull
 git clone https://github.com/micropython/micropython micropython || git -C micropython pull
-git -C micropython checkout v1.24.0
+git -C micropython checkout v1.24.1
 
 cd micropython
 git submodule update --init
@@ -30,7 +30,7 @@ cd ..
 
 
 # only check out micropython-lib, if it is not available locally, otherwise, pull
-git clone https://github.com/micropython/micropython-lib || git -C micropython-lib pull
+git clone https://github.com/ertis-research/micropython-builder -b last_working || git -C micropython-builder pull
 
 
 # create hashes, which will be appended to the output file names

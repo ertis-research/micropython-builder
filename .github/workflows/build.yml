@@ -43,7 +43,7 @@ jobs:
         run: mkdir -p ./artifacts
 
       - name: Compile for ${{ matrix.mcu }} ${{ matrix.board }}
-        run: .github/scripts/${{ matrix.mcu }}.sh ${{ matrix.board }}
+        run: .github/scripts/${{ matrix.mcu }}/${{ matrix.board }}.sh
 
       - name: Save artifact
         run: mv artifacts/${{ matrix.board }}.dfu artifacts/${{ matrix.mcu }}.${{ matrix.board }}.dfu

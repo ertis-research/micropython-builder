@@ -4,8 +4,7 @@ on:
   push:
   pull_request:
     paths:
-    - '.github/workflows/*.yml'
-    - './scripts/*.sh'
+      - '.github/workflows/*.yml'
   workflow_dispatch:
 
 jobs:
@@ -13,38 +12,39 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
 
-      - name: Checkout builder
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install arm toolchain
-        run: ./scripts/install_arm.sh
+      - name: Cache ARM Toolchain
+        id: cache-arm
+        uses: actions/cache@v3
+        with:
+          path: /usr/bin/gcc-arm-none-eabi
+          key: arm-toolchain-${{ runner.os }}
 
-      - name: Checkout ulab/micropython
-        run: ./scripts/init.sh
+      - name: Install ARM Toolchain (if not cached)
+        if: steps.cache-arm.outputs.cache-hit != 'true'
+        run: sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi
 
-      - name: Create artifacts directory
-        run: mkdir ./artifacts
+      - name: Initialize MicroPython and dependencies
+        run: .github/scripts/init.sh
 
-      - name: Set execute permissions for the script
-        run: chmod +x ./scripts/stm32/nucleo_L476RG.sh
+      - name: Ensure artifacts directory exists
+        run: mkdir -p ./artifacts
+
+      - name: Make STM32 script executable
+        run: chmod +x .github/scripts/stm32/nucleo_L476RG.sh
 
       - name: Compile for NUCLEO L476RG
-        run: ./scripts/stm32/nucleo_L476RG.sh
+        run: .github/scripts/stm32/nucleo_L476RG.sh
 
-      - name: Create Tag
+      - name: Create Git Tag
         run: |
+          git fetch --tags
           TAG_NAME=$(date +"%Y%m%d-%H%M%S")
           git tag $TAG_NAME
           git push origin $TAG_NAME
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-
-      # - uses: "marvinpinto/action-automatic-releases@latest"
-      #   with:
-      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
-      #     prerelease: false
-      #     automatic_release_tag: "latest"
-      #     title: "Release date ${{ steps.date.outputs.date }}"
-      #     files: ./artifacts/*
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

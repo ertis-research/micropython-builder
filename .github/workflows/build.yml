@@ -32,7 +32,10 @@ jobs:
       - name: Create artifacts directory
         run: mkdir ./artifacts
 
-      - name: Compile for Teensy 41
+      - name: Set execute permissions for the script
+        run: chmod +x ./scripts/stm32/nucleo_L476RG.sh
+
+      - name: Compile for NUCLEO L476RG
         run: ./scripts/stm32/nucleo_L476RG.sh
 
       - uses: "marvinpinto/action-automatic-releases@latest"

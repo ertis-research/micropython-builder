@@ -24,7 +24,7 @@ git clone https://github.com/v923z/micropython-ulab ulab || git -C ulab pull
 git clone https://github.com/micropython/micropython micropython-orig || git -C micropython pull
 git -C micropython checkout v1.24.0
 
-cd micropython
+cd micropython-orig
 git submodule update --init
 cd ..
 
@@ -35,7 +35,7 @@ git clone https://github.com/ertis-research/micropython-builder || git -C microp
 
 # create hashes, which will be appended to the output file names
 ulab_hash=`cd ulab; git describe --abbrev=8 --always; cd ..`
-upython_hash=`cd micropython; git describe --abbrev=8 --always; cd ..`
+upython_hash=`cd micropython-orig; git describe --abbrev=8 --always; cd ..`
 
 # the cross-compiler is required for each build, so we might as well get it over with
 make ${MAKEOPTS} -C micropython-orig/mpy-cross

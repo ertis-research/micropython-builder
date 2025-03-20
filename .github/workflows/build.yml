@@ -16,7 +16,7 @@ jobs:
           - mcu: stm32
             board: NUCLEO_L476RG
           - mcu: stm32
-            board: STM32L478RG
+            board: STM32L476RG
 
     steps:
       - name: Checkout Repository

@@ -13,10 +13,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
 
-      - name: Get current date
-        id: date
-        run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_ENV"
-
       - name: Checkout builder
         uses: actions/checkout@v4
 
@@ -35,6 +31,13 @@ jobs:
       - name: Compile for NUCLEO L476RG
         run: ./scripts/stm32/nucleo_L476RG.sh
 
+      - name: Create Tag
+        run: |
+          TAG_NAME=$(date +"%Y%m%d-%H%M%S")
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+
       # - uses: "marvinpinto/action-automatic-releases@latest"
       #   with:
       #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -43,7 +46,9 @@ jobs:
       #     title: "Release date ${{ steps.date.outputs.date }}"
       #     files: ./artifacts/*
 
-      - name: Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/NUCLEO_L476RG.dfu 
+          tag_name: ${{ env.TAG_NAME }}
+          files: artifacts/NUCLEO_L476RG.dfu
+          generate_release_notes: true

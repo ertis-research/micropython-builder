@@ -16,6 +16,7 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_ENV"
 
       - name: Checkout builder
         uses: actions/checkout@v1
@@ -35,10 +36,21 @@ jobs:
       - name: Compile for NUCLEO L476RG
         run: ./scripts/stm32/nucleo_L476RG.sh
 
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      # - uses: "marvinpinto/action-automatic-releases@latest"
+      #   with:
+      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
+      #     prerelease: false
+      #     automatic_release_tag: "latest"
+      #     title: "Release date ${{ steps.date.outputs.date }}"
+      #     files: ./artifacts/*
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: false
-          automatic_release_tag: "latest"
-          title: "Release date ${{ steps.date.outputs.date }}"
           files: ./artifacts/*
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release_name: ${{ steps.date.outputs.date }}
+          tag: ${{ github.ref }}
+          draft: false
+          prerelease: false

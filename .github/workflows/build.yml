@@ -10,8 +10,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    steps:
+    strategy:
+      matrix:
+        include:
+          - mcu: stm32
+            board: NUCLEO_L476RG
+          - mcu: stm32
+            board: STM32L478RG
 
+    steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -35,8 +42,11 @@ jobs:
       - name: Ensure artifacts directory exists
         run: mkdir -p ./artifacts
 
-      - name: Compile for NUCLEO L476RG
-        run: .github/scripts/stm32/nucleo_L476RG.sh
+      - name: Compile for ${{ matrix.mcu }} ${{ matrix.board }}
+        run: .github/scripts/${{ matrix.mcu }}/${{ matrix.board }}.sh
+
+      - name: Save artifact
+        run: mv artifacts/${{ matrix.board }}.dfu artifacts/${{ matrix.mcu }}.${{ matrix.board }}.dfu
 
       - name: Create Git Tag
         run: |
@@ -47,8 +57,9 @@ jobs:
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Create GitHub Release
+        if: ${{ matrix.board == 'NUCLEO_L476RG' }} # Only run once to avoid multiple releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG_NAME }}
-          files: artifacts/NUCLEO_L476RG.dfu
+          files: artifacts/*.dfu
           generate_release_notes: true

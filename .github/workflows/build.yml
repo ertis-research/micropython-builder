@@ -4,14 +4,13 @@ on:
   push:
   pull_request:
     paths:
-      - '.github/workflows/*.yml'
+      - ".github/workflows/*.yml"
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -50,5 +49,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG_NAME }}
-          files: artifacts/NUCLEO_L476RG.dfu
+          files: |
+            artifacts/NUCLEO_L476RG.dfu
+            artifacts/NUCLEO_L476RG.hex
           generate_release_notes: true

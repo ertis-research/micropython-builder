@@ -21,7 +21,7 @@ git clone https://github.com/v923z/micropython-ulab ulab || git -C ulab pull
 
 
 # only check out micropython, if it is not available locally, otherwise, pull
-git clone https://github.com/micropython/micropython micropython-orig || git -C micropython pull
+git clone https://github.com/micropython/micropython micropython || git -C micropython pull
 git -C micropython checkout v1.24.0
 
 cd micropython-orig
@@ -30,15 +30,15 @@ cd ..
 
 
 # only check out micropython-lib, if it is not available locally, otherwise, pull
-git clone https://github.com/ertis-research/micropython-builder || git -C micropython-builder pull
+git clone https://github.com/micropython/micropython-lib || git -C micropython-lib pull
 
 
 # create hashes, which will be appended to the output file names
 ulab_hash=`cd ulab; git describe --abbrev=8 --always; cd ..`
-upython_hash=`cd micropython-orig; git describe --abbrev=8 --always; cd ..`
+upython_hash=`cd micropython; git describe --abbrev=8 --always; cd ..`
 
 # the cross-compiler is required for each build, so we might as well get it over with
-make ${MAKEOPTS} -C micropython-orig/mpy-cross
+make ${MAKEOPTS} -C micropython/mpy-cross
 
 # choose a delimiter that is not probable to turn up in the description of the file
 write_platforms_list() {
@@ -54,7 +54,7 @@ copy_files() {
         echo "copying firmware"
         stem=`basename $1`
         ext=$([[ "$stem" = *.* ]] && echo ".${stem##*.}" || echo '')
-        mv micropython-orig/ports/$1 ./artifacts/$2$ext
+        mv micropython/ports/$1 ./artifacts/$2$ext
     fi
 }
 
@@ -64,10 +64,10 @@ clean_up() {
     # only remove the artifacts, if they can be saved in the ./artifacts folder
     if [ -d "./artifacts" ]; then
         echo "running make clean"
-        make clean -C ./micropython-orig/ports/$1
+        make clean -C ./micropython/ports/$1
 
         # remove the directory explicitly, if make clean didn't get rid of it
         echo "removing compilation folder"
-        rm ./micropython-orig/ports/$1/$2 -rf
+        rm ./micropython/ports/$1/$2 -rf
     fi
 }

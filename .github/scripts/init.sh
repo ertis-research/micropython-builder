@@ -24,7 +24,7 @@ git clone https://github.com/v923z/micropython-ulab ulab || git -C ulab pull
 git clone https://github.com/micropython/micropython micropython || git -C micropython pull
 git -C micropython checkout v1.24.0
 
-cd micropython-orig
+cd micropython
 git submodule update --init
 cd ..
 
